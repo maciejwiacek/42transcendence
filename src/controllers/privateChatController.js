@@ -1,6 +1,7 @@
 const {
 	handlePrivateChatConnection,
 	sendMessageToFriend,
+	handlePrivateChatDisconnection,
 } = require('../services/privateChatService')
 
 const privateChatHandler = (socket, req) => {
@@ -13,12 +14,12 @@ const privateChatHandler = (socket, req) => {
 
 	handlePrivateChatConnection(userId, socket)
 
-	socket.on('message', (message) => {
-		const parsedMessage = JSON.parse(message.toString())
+	socket.on('message', (msg) => {
+		const parsedMessage = JSON.parse(msg.toString())
 		const recipientId = parsedMessage.recipientId
-		const text = parsedMessage.text
+		const message = parsedMessage.message
 
-		sendMessageToFriend(userId, recipientId, text)
+		sendMessageToFriend(userId, recipientId, message)
 	})
 
 	socket.on('close', () => {

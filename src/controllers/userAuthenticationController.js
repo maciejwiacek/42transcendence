@@ -1,8 +1,3 @@
-const openDatabase = require('../models/database')
-const {
-	validateUserCredentials,
-} = require('../services/userAuthenticationServices')
-const Password = require('../services/passwordService')
 const User = require('../models/userModel')
 
 const registrationHandler = async (req, res) => {
@@ -25,6 +20,19 @@ const loginHandler = async (req, res) => {
 
 	const { success, message, user } = await User.login(username, password)
 	if (success) {
+		const payload = {
+			userId: user.id,
+			username: user.username,
+			email: user.email,
+			firstName: user.firstName,
+			lastName: user.lastName,
+		}
+		const token = req.jwt.sign(payload, { expiresIn: '1h' })
+		res.setCookie('access_token', token, {
+			path: '/',
+			httpOnly: true,
+			secure: true,
+		})
 		return res.status(200).send({ success, message, user })
 	} else {
 		return res.status(400).send({ success, message })

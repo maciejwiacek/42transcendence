@@ -1,6 +1,7 @@
 const {
 	handleGameChatConnection,
 	sendMessageToGameRoom,
+	handleGameChatDisconnection,
 } = require('../services/gameChatService')
 
 const gameChatHandler = (socket, req) => {

@@ -1,11 +1,25 @@
 const fastify = require('fastify')()
+const fjwt = require('@fastify/jwt')
+const fCookie = require('@fastify/cookie')
+
 const gameChatRoutes = require('./src/routes/gameChat')
 const privateChatRoutes = require('./src/routes/privateChat')
 const userAuthenticationRoutes = require('./src/routes/userAuthentication')
-const Password = require('./src/services/passwordService')
 
 fastify.register(require('@fastify/websocket'), {
 	options: { clientTracking: true },
+})
+
+fastify.register(fjwt, { secret: 'supersecret' })
+
+fastify.addHook('preHandler', (req, res, next) => {
+	req.jwt = fastify.jwt
+	return next()
+})
+
+fastify.register(fCookie, {
+	secret: 'supersecret',
+	hook: 'preHandler',
 })
 
 fastify.register(userAuthenticationRoutes) // /register /login /logout
